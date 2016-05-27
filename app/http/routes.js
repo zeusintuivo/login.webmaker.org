@@ -11,17 +11,18 @@ module.exports = function (http, modelsController, webmakerAuth) {
       user3: require("./controllers/user3")
     },
     userList = env.get("ALLOWED_USERS"),
+    extractUserPass = function (pair) {
+      var terms = pair.split(":");
+      arrList[terms[0]] = terms[1];
+    },
     authMiddleware = basicAuth(function (user, pass) {
       if (typeof userList === "string") {
-        arrList = {};
-        userList.split(',').forEach(function(pair) {
-          var terms = pair.split(':');
-          arrList[terms[0]] = terms[1];
-        });
+        var arrList = {};
+        userList.split(",").forEach(extractUserPass);
         userList = arrList;
       }
       var keys = Object.keys(userList);
-      for (var k=0; k<keys.length; k++) {
+      for (var k = 0; k < keys.length; k++) {
         var username = keys[k];
         if (user === username && pass === userList[username]) {
           return true;
